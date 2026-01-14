@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Радио</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 Радио</h1>
+            <div class="current-station" id="currentStation">
+                Выберите станцию
+            </div>
+        </header>
+
+        <main>
+            <div class="player-section">
+                <audio id="audioPlayer" preload="none"></audio>
+                <div class="player-controls">
+                    <button id="playPauseBtn" class="control-btn" aria-label="Воспроизведение/Пауза">
+                        <span id="playPauseIcon">▶️</span>
+                    </button>
+                    <div class="station-info">
+                        <div class="station-name" id="stationName">-</div>
+                        <div class="station-status" id="stationStatus">Остановлено</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stations-section">
+                <h2>Доступные станции</h2>
+                <div class="stations-list" id="stationsList">
+                    <!-- Станции будут добавлены через JavaScript -->
+                </div>
+            </div>
+        </main>
+
+        <div class="error-message" id="errorMessage" style="display: none;"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
+
