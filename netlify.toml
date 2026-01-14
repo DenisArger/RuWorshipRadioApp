@@ -4,6 +4,9 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+  # This plugin automatically handles Next.js build output
+  # IMPORTANT: Remove publish directory setting from Netlify UI (Site settings > Build & deploy > Publish directory)
+  # The plugin will fail if a publish directory is set in the UI
 
 [dev]
   command = "yarn next:dev"

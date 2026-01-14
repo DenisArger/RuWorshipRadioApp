@@ -97,18 +97,26 @@ yarn build
    netlify init
    ```
 
-4. Установите переменные окружения в Netlify Dashboard:
+4. **ВАЖНО: Настройка Netlify для Next.js**
+   - Перейдите в Netlify Dashboard → Site settings → Build & deploy → Build settings
+   - Убедитесь, что **Publish directory** пустое или удалено
+   - Плагин `@netlify/plugin-nextjs` автоматически управляет publish directory
+   - Если в UI установлен publish directory (например, `dist/public`), это вызовет ошибку сборки
+   - Build command должен быть: `yarn next:build`
+
+5. Установите переменные окружения в Netlify Dashboard:
    - Перейдите в Settings → Environment variables
    - Добавьте `TELEGRAM_BOT_TOKEN` и `WEB_APP_URL`
 
-5. Деплой:
+6. Деплой:
    ```bash
    yarn deploy
    ```
+   Или просто сделайте push в репозиторий, если настроен автоматический деплой
 
-6. После деплоя обновите `WEB_APP_URL` в переменных окружения на реальный URL вашего приложения
+7. После деплоя обновите `WEB_APP_URL` в переменных окружения на реальный URL вашего приложения
 
-7. Настройте webhook для Telegram бота:
+8. Настройте webhook для Telegram бота:
    - URL webhook: `https://your-app.netlify.app/.netlify/functions/telegram-webhook`
    - Используйте Telegram Bot API для установки webhook:
      ```bash
