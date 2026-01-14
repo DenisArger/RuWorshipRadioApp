@@ -34,50 +34,50 @@ const radioStation = {
     id: 'ruworship',
     name: 'Радио RuWorship',
     description: 'Песни в стиле Praise&Worship, Gospel, песни прославления и поклонения на русском языке',
-    apiBaseUrl: 'https://s.ruworship.ru:3578', // URL панели управления radio-tochka.com
+    apiBaseUrl: 'https://62.109.26.147:3578', // URL панели управления radio-tochka.com
     serverId: 1, // ID сервера в панели управления
     streams: [
         {
             id: 'https-256',
             bitrate: '256 кбит',
             protocol: 'HTTPS',
-            streamUrl: 'https://s.ruworship.ru:8125/radio'
+            streamUrl: 'https://62.109.26.147:8125/radio'
         },
         {
             id: 'https-128',
             bitrate: '128 кбит',
             protocol: 'HTTPS',
-            streamUrl: 'https://s.ruworship.ru:8005/radio'
+            streamUrl: 'https://62.109.26.147:8005/radio'
         },
         {
             id: 'https-96',
             bitrate: '96 кбит',
             protocol: 'HTTPS',
-            streamUrl: 'https://s.ruworship.ru:8105/radio'
+            streamUrl: 'https://62.109.26.147:8105/radio'
         },
         {
             id: 'https-64',
             bitrate: '64 кбит',
             protocol: 'HTTPS',
-            streamUrl: 'https://s.ruworship.ru:8095/radio'
+            streamUrl: 'https://62.109.26.147:8095/radio'
         },
         {
             id: 'http-128',
             bitrate: '128 кбит',
             protocol: 'HTTP',
-            streamUrl: 'http://s.ruworship.ru:8000/radio'
+            streamUrl: 'http://62.109.26.147:8000/radio'
         },
         {
             id: 'http-96',
             bitrate: '96 кбит',
             protocol: 'HTTP',
-            streamUrl: 'http://s.ruworship.ru:8100/radio'
+            streamUrl: 'http://62.109.26.147:8100/radio'
         },
         {
             id: 'http-64',
             bitrate: '64 кбит',
             protocol: 'HTTP',
-            streamUrl: 'http://s.ruworship.ru:8090/radio'
+            streamUrl: 'http://62.109.26.147:8090/radio'
         }
     ]
 };
