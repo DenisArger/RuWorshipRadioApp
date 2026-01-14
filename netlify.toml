@@ -1,11 +1,13 @@
 [build]
-  command = "yarn build"
+  command = "yarn next:build"
   functions = "netlify/functions"
-  publish = "dist/public"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 [dev]
-  port = 8888
-  publish = "public"
+  command = "yarn next:dev"
+  port = 3000
 
 [functions]
   node_bundler = "esbuild"
