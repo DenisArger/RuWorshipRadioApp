@@ -97,12 +97,21 @@ yarn build
    netlify init
    ```
 
-4. **ВАЖНО: Настройка Netlify для Next.js**
-   - Перейдите в Netlify Dashboard → Site settings → Build & deploy → Build settings
-   - Убедитесь, что **Publish directory** пустое или удалено
+4. **КРИТИЧЕСКИ ВАЖНО: Настройка Netlify для Next.js**
+   
+   **ОБЯЗАТЕЛЬНО выполните эти шаги, иначе сборка будет падать с ошибкой:**
+   
+   - Перейдите в Netlify Dashboard → Ваш сайт → Site settings → Build & deploy → Build settings
+   - Найдите поле **"Publish directory"**
+   - **ОБЯЗАТЕЛЬНО ОЧИСТИТЕ ЭТО ПОЛЕ** - оставьте его полностью пустым
+   - Если там указано что-то (например, `dist/public` или `/`), это вызовет ошибку сборки
    - Плагин `@netlify/plugin-nextjs` автоматически управляет publish directory
-   - Если в UI установлен publish directory (например, `dist/public`), это вызовет ошибку сборки
-   - Build command должен быть: `yarn next:build`
+   - Build command должен быть: `yarn next:build` (уже настроено в `netlify.toml`)
+   
+   **Если вы не удалите publish directory из UI, вы получите ошибку:**
+   ```
+   Error: Your publish directory cannot be the same as the base directory of your site
+   ```
 
 5. Установите переменные окружения в Netlify Dashboard:
    - Перейдите в Settings → Environment variables
