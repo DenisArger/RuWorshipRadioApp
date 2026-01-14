@@ -29,25 +29,59 @@ if (tg) {
     }
 }
 
-// Конфигурация радиостанций
-// Замените эти данные на ваши реальные ссылки на радио
-const stations = [
-    {
-        id: 'station1',
-        name: 'Радиостанция 1',
-        streamUrl: 'https://example.com/radio1.mp3',
-        description: 'Описание первой радиостанции'
-    },
-    {
-        id: 'station2',
-        name: 'Радиостанция 2',
-        streamUrl: 'https://example.com/radio2.mp3',
-        description: 'Описание второй радиостанции'
-    }
-];
+// Конфигурация радиостанции
+const radioStation = {
+    id: 'ruworship',
+    name: 'Радио RuWorship',
+    description: 'Песни в стиле Praise&Worship, Gospel, песни прославления и поклонения на русском языке',
+    streams: [
+        {
+            id: 'https-256',
+            bitrate: '256 кбит',
+            protocol: 'HTTPS',
+            streamUrl: 'https://s.ruworship.ru:8125/radio'
+        },
+        {
+            id: 'https-128',
+            bitrate: '128 кбит',
+            protocol: 'HTTPS',
+            streamUrl: 'https://s.ruworship.ru:8005/radio'
+        },
+        {
+            id: 'https-96',
+            bitrate: '96 кбит',
+            protocol: 'HTTPS',
+            streamUrl: 'https://s.ruworship.ru:8105/radio'
+        },
+        {
+            id: 'https-64',
+            bitrate: '64 кбит',
+            protocol: 'HTTPS',
+            streamUrl: 'https://s.ruworship.ru:8095/radio'
+        },
+        {
+            id: 'http-128',
+            bitrate: '128 кбит',
+            protocol: 'HTTP',
+            streamUrl: 'http://s.ruworship.ru:8000/radio'
+        },
+        {
+            id: 'http-96',
+            bitrate: '96 кбит',
+            protocol: 'HTTP',
+            streamUrl: 'http://s.ruworship.ru:8100/radio'
+        },
+        {
+            id: 'http-64',
+            bitrate: '64 кбит',
+            protocol: 'HTTP',
+            streamUrl: 'http://s.ruworship.ru:8090/radio'
+        }
+    ]
+};
 
 // Состояние приложения
-let currentStation = null;
+let currentStream = null;
 let isPlaying = false;
 
 // DOM элементы
@@ -67,30 +101,42 @@ function init() {
     setupEventListeners();
 }
 
-// Рендеринг списка станций
+// Рендеринг списка потоков
 function renderStations() {
     stationsList.innerHTML = '';
     
-    stations.forEach(station => {
-        const stationItem = document.createElement('div');
-        stationItem.className = 'station-item';
-        stationItem.dataset.stationId = station.id;
+    // Показываем описание радиостанции
+    const stationInfo = document.createElement('div');
+    stationInfo.className = 'station-info-header';
+    stationInfo.innerHTML = `
+        <div class="station-item-title">${escapeHtml(radioStation.name)}</div>
+        <div class="station-item-description">${escapeHtml(radioStation.description)}</div>
+    `;
+    stationsList.appendChild(stationInfo);
+    
+    // Показываем потоки
+    radioStation.streams.forEach(stream => {
+        const streamItem = document.createElement('div');
+        streamItem.className = 'station-item';
+        if (currentStream?.id === stream.id && isPlaying) {
+            streamItem.classList.add('active');
+        }
+        streamItem.dataset.streamId = stream.id;
         
-        stationItem.innerHTML = `
-            <div class="station-item-title">${escapeHtml(station.name)}</div>
-            ${station.description ? `<div class="station-item-description">${escapeHtml(station.description)}</div>` : ''}
-            <div class="station-item-indicator">${currentStation?.id === station.id ? '🔊' : ''}</div>
+        streamItem.innerHTML = `
+            <div class="station-item-title">${escapeHtml(stream.bitrate)} (${escapeHtml(stream.protocol)})</div>
+            <div class="station-item-indicator">${currentStream?.id === stream.id && isPlaying ? '🔊' : ''}</div>
         `;
         
-        stationItem.addEventListener('click', () => selectStation(station));
-        stationsList.appendChild(stationItem);
+        streamItem.addEventListener('click', () => selectStream(stream));
+        stationsList.appendChild(streamItem);
     });
 }
 
-// Выбор станции
-function selectStation(station) {
-    if (currentStation?.id === station.id && isPlaying) {
-        // Если выбрана та же станция и она играет, просто пауза
+// Выбор потока
+function selectStream(stream) {
+    if (currentStream?.id === stream.id && isPlaying) {
+        // Если выбран тот же поток и он играет, просто пауза
         togglePlayPause();
         return;
     }
@@ -101,9 +147,9 @@ function selectStation(station) {
         isPlaying = false;
     }
     
-    // Установка новой станции
-    currentStation = station;
-    audioPlayer.src = station.streamUrl;
+    // Установка нового потока
+    currentStream = stream;
+    audioPlayer.src = stream.streamUrl;
     
     // Обновление UI
     updateUI();
@@ -169,8 +215,8 @@ function setupEventListeners() {
 
 // Переключение воспроизведения/паузы
 function togglePlayPause() {
-    if (!currentStation) {
-        showError('Выберите станцию для воспроизведения');
+    if (!currentStream) {
+        showError('Выберите поток для воспроизведения');
         return;
     }
     
@@ -183,13 +229,13 @@ function togglePlayPause() {
 
 // Воспроизведение
 function play() {
-    if (!currentStation) {
-        showError('Выберите станцию для воспроизведения');
+    if (!currentStream) {
+        showError('Выберите поток для воспроизведения');
         return;
     }
     
     if (!audioPlayer.src) {
-        audioPlayer.src = currentStation.streamUrl;
+        audioPlayer.src = currentStream.streamUrl;
     }
     
     audioPlayer.play().catch(error => {
@@ -207,17 +253,17 @@ function pause() {
 
 // Обновление UI
 function updateUI() {
-    if (currentStation) {
-        stationName.textContent = currentStation.name;
-        currentStationDisplay.textContent = currentStation.name;
+    if (currentStream) {
+        stationName.textContent = `${radioStation.name} - ${currentStream.bitrate}`;
+        currentStationDisplay.textContent = radioStation.name;
     } else {
-        stationName.textContent = '-';
-        currentStationDisplay.textContent = 'Выберите станцию';
+        stationName.textContent = radioStation.name;
+        currentStationDisplay.textContent = 'Выберите поток';
     }
     
     playPauseIcon.textContent = isPlaying ? '⏸️' : '▶️';
     
-    if (!isPlaying && !currentStation) {
+    if (!isPlaying && !currentStream) {
         stationStatus.textContent = 'Остановлено';
     }
 }

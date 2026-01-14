@@ -164,6 +164,26 @@ header h1 {
     opacity: 0.7;
 }
 
+.station-info-header {
+    background: var(--station-bg);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 2px solid var(--border-color);
+}
+
+.station-info-header .station-item-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.station-info-header .station-item-description {
+    font-size: 14px;
+    opacity: 0.8;
+    line-height: 1.4;
+}
+
 .station-item-indicator {
     position: absolute;
     right: 16px;
