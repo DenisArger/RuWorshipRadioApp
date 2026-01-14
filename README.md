@@ -97,21 +97,17 @@ yarn build
    netlify init
    ```
 
-4. **КРИТИЧЕСКИ ВАЖНО: Настройка Netlify для Next.js**
+4. **Настройка Netlify для Next.js**
    
-   **ОБЯЗАТЕЛЬНО выполните эти шаги, иначе сборка будет падать с ошибкой:**
+   Проект настроен для использования статического экспорта Next.js:
+   - Next.js создает статические файлы в директории `out`
+   - В `netlify.toml` указан `publish = "out"`
+   - Build command: `yarn next:build` (уже настроено)
    
-   - Перейдите в Netlify Dashboard → Ваш сайт → Site settings → Build & deploy → Build settings
-   - Найдите поле **"Publish directory"**
-   - **ОБЯЗАТЕЛЬНО ОЧИСТИТЕ ЭТО ПОЛЕ** - оставьте его полностью пустым
-   - Если там указано что-то (например, `dist/public` или `/`), это вызовет ошибку сборки
-   - Плагин `@netlify/plugin-nextjs` автоматически управляет publish directory
-   - Build command должен быть: `yarn next:build` (уже настроено в `netlify.toml`)
-   
-   **Если вы не удалите publish directory из UI, вы получите ошибку:**
-   ```
-   Error: Your publish directory cannot be the same as the base directory of your site
-   ```
+   **Проверьте настройки в Netlify Dashboard:**
+   - Перейдите в Site settings → Build & deploy → Build settings
+   - Убедитесь, что **Publish directory** установлен в `out` (или оставьте пустым - значение из `netlify.toml` будет использовано)
+   - Build command должен быть: `yarn next:build`
 
 5. Установите переменные окружения в Netlify Dashboard:
    - Перейдите в Settings → Environment variables
@@ -149,10 +145,10 @@ yarn build
 
 ## Технологии
 
-- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **Frontend**: Next.js 16, React 19, TypeScript
 - **Backend**: Netlify Functions (TypeScript)
 - **Telegram API**: Telegram Bot API, Telegram Web App API
-- **Deployment**: Netlify
+- **Deployment**: Netlify (Static Export)
 
 ## Лицензия
 
