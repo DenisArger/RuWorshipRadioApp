@@ -300,8 +300,8 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.headerTitle}>🎵 Радио</h1>
-        <div className={styles.currentStation}>{getCurrentStationDisplay()}</div>
+        <h1 className={styles.headerTitle}>🎵 Радио RuWorship</h1>
+        <div className={styles.headerDescription}>{radioStation.description}</div>
       </header>
 
       <main>
@@ -328,12 +328,6 @@ export default function Home() {
         <div className={styles.stationsSection}>
           <h2 className={styles.stationsSectionTitle}>Доступные потоки</h2>
           <div className={styles.stationsList}>
-            <div className={styles.stationInfoHeader}>
-              <div className={styles.stationItemTitle}>{radioStation.name}</div>
-              <div className={styles.stationItemDescription}>
-                {radioStation.description}
-              </div>
-            </div>
             {radioStation.streams.map((stream) => (
               <div
                 key={stream.id}
