@@ -34,6 +34,8 @@ const radioStation = {
     id: 'ruworship',
     name: 'Радио RuWorship',
     description: 'Песни в стиле Praise&Worship, Gospel, песни прославления и поклонения на русском языке',
+    apiBaseUrl: 'https://s.ruworship.ru:3578', // URL панели управления radio-tochka.com
+    serverId: 1, // ID сервера в панели управления
     streams: [
         {
             id: 'https-256',
@@ -83,6 +85,8 @@ const radioStation = {
 // Состояние приложения
 let currentStream = null;
 let isPlaying = false;
+let currentTrack = null;
+let trackPollInterval = null;
 
 // DOM элементы
 const audioPlayer = document.getElementById('audioPlayer');
@@ -145,6 +149,7 @@ function selectStream(stream) {
     if (isPlaying) {
         audioPlayer.pause();
         isPlaying = false;
+        stopTrackPolling();
     }
     
     // Установка нового потока
@@ -172,11 +177,13 @@ function setupAudioPlayer() {
     
     audioPlayer.addEventListener('play', () => {
         isPlaying = true;
+        startTrackPolling();
         updateUI();
     });
     
     audioPlayer.addEventListener('pause', () => {
         isPlaying = false;
+        stopTrackPolling();
         updateUI();
     });
     
@@ -184,6 +191,7 @@ function setupAudioPlayer() {
         console.error('Audio error:', e);
         showError('Ошибка воспроизведения. Проверьте подключение к интернету.');
         isPlaying = false;
+        stopTrackPolling();
         updateUI();
         playPauseBtn.disabled = false;
     });
@@ -251,6 +259,81 @@ function pause() {
     audioPlayer.pause();
 }
 
+// Обновление информации о текущем треке
+function updateCurrentTrack() {
+    if (!radioStation.apiBaseUrl || !radioStation.serverId) {
+        return;
+    }
+
+    // Используем JSONP для обхода CORS
+    const callbackName = 'trackCallback_' + Date.now();
+    const apiUrl = `${radioStation.apiBaseUrl}/api/history/?limit=1&server=${radioStation.serverId}&callback=${callbackName}&format=jsonp`;
+
+    // Создаем и добавляем script тег для JSONP
+    const script = document.createElement('script');
+    script.src = apiUrl;
+    
+    // Создаем глобальную функцию обратного вызова
+    window[callbackName] = function(response) {
+        try {
+            if (response && response.objects && response.objects.length > 0 && response.objects[0].metadata) {
+                currentTrack = response.objects[0].metadata;
+                updateUI();
+            } else {
+                currentTrack = null;
+            }
+        } catch (err) {
+            console.error('Error parsing track info:', err);
+            currentTrack = null;
+        } finally {
+            // Удаляем функцию обратного вызова и скрипт
+            delete window[callbackName];
+            if (script && script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
+        }
+    };
+
+    script.onerror = function() {
+        // При ошибке просто очищаем трек
+        currentTrack = null;
+        delete window[callbackName];
+        if (script.parentNode) {
+            script.parentNode.removeChild(script);
+        }
+    };
+    
+    document.head.appendChild(script);
+}
+
+// Запуск/остановка периодического опроса трека
+function startTrackPolling() {
+    // Остановка предыдущего интервала
+    stopTrackPolling();
+
+    // Запуск только если играет и есть поток и настроен API
+    if (isPlaying && currentStream && radioStation.apiBaseUrl && radioStation.serverId) {
+        // Первый запрос сразу
+        updateCurrentTrack();
+        
+        // Затем каждые 5 секунд
+        trackPollInterval = setInterval(() => {
+            updateCurrentTrack();
+        }, 5000);
+    } else {
+        // Очистка информации о треке при остановке
+        currentTrack = null;
+        updateUI();
+    }
+}
+
+function stopTrackPolling() {
+    if (trackPollInterval) {
+        clearInterval(trackPollInterval);
+        trackPollInterval = null;
+    }
+}
+
 // Обновление UI
 function updateUI() {
     if (currentStream) {
@@ -263,9 +346,13 @@ function updateUI() {
     
     playPauseIcon.textContent = isPlaying ? '⏸️' : '▶️';
     
-    if (!isPlaying && !currentStream) {
+    // Показываем информацию о треке, если она есть, иначе статус
+    if (currentTrack) {
+        stationStatus.textContent = currentTrack;
+    } else if (!isPlaying && !currentStream) {
         stationStatus.textContent = 'Остановлено';
     }
+    // Если играет, но трека нет, статус уже установлен обработчиками событий аудио
 }
 
 // Показать ошибку

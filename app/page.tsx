@@ -23,15 +23,21 @@ declare global {
   }
 }
 
+interface TrackInfo {
+  metadata?: string;
+}
+
 export default function Home() {
   const [currentStream, setCurrentStream] = useState<RadioStream | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [status, setStatus] = useState('Остановлено')
+  const [currentTrack, setCurrentTrack] = useState<TrackInfo | null>(null)
   const [error, setError] = useState<string | null>(null)
   const audioPlayerRef = useRef<HTMLAudioElement>(null)
   const playPauseBtnRef = useRef<HTMLButtonElement>(null)
   const canPlayHandlerRef = useRef<(() => void) | null>(null)
   const currentStreamIdRef = useRef<string | null>(null)
+  const trackPollIntervalRef = useRef<NodeJS.Timeout | null>(null)
 
   // Инициализация Telegram Web App
   useEffect(() => {
@@ -165,6 +171,61 @@ export default function Home() {
       return () => clearTimeout(timer)
     }
   }, [error])
+
+  // Функция для получения текущего трека
+  const fetchCurrentTrack = async () => {
+    if (!radioStation.apiBaseUrl || !radioStation.serverId) {
+      return
+    }
+
+    try {
+      const apiUrl = `${radioStation.apiBaseUrl}/api/history/?limit=1&server=${radioStation.serverId}`
+      const response = await fetch(apiUrl)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch track info')
+      }
+
+      const data = await response.json()
+      if (data.objects && data.objects.length > 0 && data.objects[0].metadata) {
+        setCurrentTrack({ metadata: data.objects[0].metadata })
+      }
+    } catch (err) {
+      // Silently fail - fallback to status display
+      console.error('Error fetching track info:', err)
+      setCurrentTrack(null)
+    }
+  }
+
+  // Периодический опрос API для получения текущего трека
+  useEffect(() => {
+    // Очистка предыдущего интервала
+    if (trackPollIntervalRef.current) {
+      clearInterval(trackPollIntervalRef.current)
+      trackPollIntervalRef.current = null
+    }
+
+    // Запуск опроса только если играет и есть поток
+    if (isPlaying && currentStream && radioStation.apiBaseUrl && radioStation.serverId) {
+      // Первый запрос сразу
+      fetchCurrentTrack()
+      
+      // Затем каждые 5 секунд
+      trackPollIntervalRef.current = setInterval(() => {
+        fetchCurrentTrack()
+      }, 5000)
+    } else {
+      // Очистка информации о треке при остановке
+      setCurrentTrack(null)
+    }
+
+    return () => {
+      if (trackPollIntervalRef.current) {
+        clearInterval(trackPollIntervalRef.current)
+        trackPollIntervalRef.current = null
+      }
+    }
+  }, [isPlaying, currentStream])
 
   const selectStream = (stream: RadioStream) => {
     if (currentStream?.id === stream.id && isPlaying) {
@@ -319,7 +380,7 @@ export default function Home() {
             <div className={styles.stationInfo}>
               <div className={styles.stationName}>{getStationName()}</div>
               <div className={styles.stationStatus}>
-                {!isPlaying && !currentStream ? 'Остановлено' : status}
+                {currentTrack?.metadata || (!isPlaying && !currentStream ? 'Остановлено' : status)}
               </div>
             </div>
           </div>

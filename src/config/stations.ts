@@ -10,12 +10,16 @@ export interface RadioStation {
   name: string;
   description: string;
   streams: RadioStream[];
+  apiBaseUrl?: string;
+  serverId?: number;
 }
 
 export const radioStation: RadioStation = {
   id: 'ruworship',
   name: 'Радио RuWorship',
   description: 'Песни в стиле Praise&Worship, Gospel, песни прославления и поклонения на русском языке',
+  apiBaseUrl: 'https://s.ruworship.ru:3578', // URL панели управления radio-tochka.com
+  serverId: 1, // ID сервера в панели управления
   streams: [
     {
       id: 'https-256',
