@@ -11,7 +11,9 @@
     "next:start": "next start",
     "deploy": "yarn build && netlify deploy --prod",
     "netlify:dev": "netlify dev",
-    "netlify:build": "netlify build"
+    "netlify:build": "netlify build",
+    "lint": "tsc --noEmit",
+    "test": "node -e \"console.log('test: no automated tests yet')\""
   },
   "keywords": [
     "telegram",
