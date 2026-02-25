@@ -1,156 +1,75 @@
 # RuWorshipRadioApp
 
-Веб-приложение для прослушивания радиостанций поклонения через Telegram Web App.
-
-## Описание
-
-Это приложение позволяет пользователям слушать радиостанции прямо в Telegram через Web App интерфейс. Приложение развернуто на Netlify и использует Telegram Bot API для интеграции.
-
-## Структура проекта
-
+## English
+## Problem
+Worship radio listeners in Telegram need a simple in-app player without switching to external websites/apps.
+## Solution
+RuWorshipRadioApp provides a Telegram Web App + webhook backend for radio station playback and bot integration.
+## Tech Stack
+- Node.js, TypeScript
+- Next.js
+- Telegram Web App / Bot API
+- Netlify Functions
+## Architecture
+```text
+netlify/functions/
+public/
+src/config/
+netlify.toml
+package.json
 ```
-RuWorshipRadioApp/
-├── netlify/
-│   └── functions/
-│       └── telegram-webhook.ts    # Обработчик webhook для бота
-├── public/
-│   ├── index.html                 # Главная страница Web App
-│   ├── app.js                     # Логика плеера и Telegram API
-│   └── styles.css                 # Стили приложения
-├── src/
-│   └── config/
-│       └── stations.ts            # Конфигурация радиостанций
-├── netlify.toml                   # Конфигурация Netlify
-├── package.json                   # Зависимости проекта
-└── tsconfig.json                  # TypeScript конфигурация
+```mermaid
+flowchart TD
+  A[Telegram User] --> B[Web App UI]
+  B --> C[Station config]
+  A --> D[Telegram Bot]
+  D --> E[Netlify webhook function]
 ```
-
-## Установка
-
-1. Клонируйте репозиторий или создайте проект
-2. Установите зависимости:
-   ```bash
-   yarn install
-   ```
-
-3. Создайте файл `.env` на основе `.env.example`:
-   ```bash
-   cp .env.example .env
-   ```
-
-4. Настройте переменные окружения в `.env`:
-   - `TELEGRAM_BOT_TOKEN` - токен вашего Telegram бота (получите у @BotFather)
-   - `WEB_APP_URL` - URL вашего развернутого приложения на Netlify
-
-## Настройка радиостанций
-
-Откройте файл `public/app.js` и найдите массив `stations`. Замените примеры на ваши реальные ссылки на радиостанции:
-
-```javascript
-const stations = [
-    {
-        id: 'station1',
-        name: 'Название радиостанции',
-        streamUrl: 'https://your-radio-stream-url.com/stream.mp3',
-        description: 'Описание станции'
-    },
-    // Добавьте больше станций...
-];
-```
-
-## Локальная разработка
-
-Запустите локальный сервер разработки:
-
+## Features
+- Telegram Web App player UI
+- Configurable radio station list
+- Webhook integration for Telegram bot flows
+- Netlify-ready deployment
+## How to Run
 ```bash
+yarn install
+cp .env.example .env
 yarn netlify:dev
 ```
 
-Или:
-
-```bash
-yarn dev
+## Русский
+## Проблема
+Слушателям worship-радио в Telegram нужен удобный встроенный плеер без перехода на внешние сайты и приложения.
+## Решение
+RuWorshipRadioApp предоставляет Telegram Web App + webhook backend для воспроизведения станций и интеграции с ботом.
+## Стек
+- Node.js, TypeScript
+- Next.js
+- Telegram Web App / Bot API
+- Netlify Functions
+## Архитектура
+```text
+netlify/functions/
+public/
+src/config/
+netlify.toml
+package.json
 ```
-
-## Сборка
-
-Соберите проект:
-
-```bash
-yarn build
+```mermaid
+flowchart TD
+  A[Пользователь Telegram] --> B[Web App UI]
+  B --> C[Конфиг станций]
+  A --> D[Telegram бот]
+  D --> E[Netlify webhook function]
 ```
-
-## Деплой на Netlify
-
-1. Убедитесь, что у вас установлен Netlify CLI:
-   ```bash
-   npm install -g netlify-cli
-   ```
-
-2. Войдите в Netlify:
-   ```bash
-   netlify login
-   ```
-
-3. Инициализируйте проект (если еще не сделано):
-   ```bash
-   netlify init
-   ```
-
-4. **Настройка Netlify для Next.js**
-   
-   Проект настроен для использования статического экспорта Next.js:
-   - Next.js создает статические файлы в директории `out`
-   - В `netlify.toml` указан `publish = "out"`
-   - Build command: `yarn next:build` (уже настроено)
-   
-   **Проверьте настройки в Netlify Dashboard:**
-   - Перейдите в Site settings → Build & deploy → Build settings
-   - Убедитесь, что **Publish directory** установлен в `out` (или оставьте пустым - значение из `netlify.toml` будет использовано)
-   - Build command должен быть: `yarn next:build`
-
-5. Установите переменные окружения в Netlify Dashboard:
-   - Перейдите в Settings → Environment variables
-   - Добавьте `TELEGRAM_BOT_TOKEN` и `WEB_APP_URL`
-
-6. Деплой:
-   ```bash
-   yarn deploy
-   ```
-   Или просто сделайте push в репозиторий, если настроен автоматический деплой
-
-7. После деплоя обновите `WEB_APP_URL` в переменных окружения на реальный URL вашего приложения
-
-8. Настройте webhook для Telegram бота:
-   - URL webhook: `https://your-app.netlify.app/.netlify/functions/telegram-webhook`
-   - Используйте Telegram Bot API для установки webhook:
-     ```bash
-     curl -X POST "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=https://your-app.netlify.app/.netlify/functions/telegram-webhook"
-     ```
-
-## Использование
-
-1. Откройте вашего Telegram бота
-2. Отправьте команду `/start`
-3. Нажмите кнопку "🎵 Открыть радио"
-4. Выберите радиостанцию и начните прослушивание
-
-## Особенности
-
-- Поддержка темной и светлой темы Telegram
-- Адаптивный дизайн для мобильных устройств
-- Автоматическое определение темы из Telegram
-- Обработка ошибок подключения
-- Простой и интуитивный интерфейс
-
-## Технологии
-
-- **Frontend**: Next.js 16, React 19, TypeScript
-- **Backend**: Netlify Functions (TypeScript)
-- **Telegram API**: Telegram Bot API, Telegram Web App API
-- **Deployment**: Netlify (Static Export)
-
-## Лицензия
-
-MIT
-
+## Возможности
+- UI-плеер внутри Telegram Web App
+- Конфигурируемый список радиостанций
+- Webhook-интеграция с Telegram-ботом
+- Готовность к деплою на Netlify
+## Как запустить
+```bash
+yarn install
+cp .env.example .env
+yarn netlify:dev
+```
