@@ -13,7 +13,7 @@
     "netlify:dev": "netlify dev",
     "netlify:build": "netlify build",
     "lint": "tsc --noEmit",
-    "test": "node --test"
+    "test": "node --test test/**/*.test.*"
   },
   "keywords": [
     "telegram",
